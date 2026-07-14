@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.example.path</groupId>
+  <artifactId>navigate</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+
+    <!-- ================================================== -->
+    <!-- Spring Core / DI                                    -->
+    <!-- @Component, @Service, @Repository, @Configuration   -->
+    <!-- ================================================== -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>7.0.8</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- ================================================== -->
+    <!-- Spring MVC                                         -->
+    <!-- @Controller, @RestController, DispatcherServlet     -->
+    <!-- ================================================== -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>7.0.8</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- ================================================== -->
+    <!-- JPA / Transaction                                  -->
+    <!-- EntityManager, JpaTransactionManager, @Transactional -->
+    <!-- ================================================== -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>7.0.8</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>7.0.8</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>7.0.8</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>6.5.2.Final</version>
+      <type>pom</type>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- ================================================== -->
+    <!-- Validation                                         -->
+    <!-- @Valid, @NotNull, @NotBlank 등                      -->
+    <!-- ================================================== -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>6.2.5.Final</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- ================================================== -->
+    <!-- Database                                           -->
+    <!-- ================================================== -->
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>8.3.0</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>7.1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- ================================================== -->
+    <!-- Servlet API                                        -->
+    <!-- Tomcat이 실행 시 제공하므로 WAR에 포함하지 않음       -->
+    <!-- ================================================== -->
+
+    <!-- ================================================== -->
+    <!-- Logging                                            -->
+    <!-- ================================================== -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.4.14</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- ================================================== -->
+    <!-- Lombok                                             -->
+    <!-- ================================================== -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.42</version>
+      <scope>compile</scope>
+    </dependency>
+
+
+
+  </dependencies>
+
+</project>
