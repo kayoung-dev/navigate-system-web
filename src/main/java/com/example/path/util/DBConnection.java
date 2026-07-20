@@ -1,61 +1,54 @@
 package com.example.path.util;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
- * route_search.json / route_option.json 파일에 대한 읽기·쓰기를 담당하는 싱글턴.
- * 실제 DB의 DataSource/Connection 역할을 JSON 파일 접근으로 대체한다.
+ * db.properties를 읽어 MariaDB에 연결하는 DataSource(HikariCP)를 관리하는 싱글턴.
  */
 public class DBConnection {
 
     private static final DBConnection INSTANCE = new DBConnection();
 
-    private final ObjectMapper objectMapper;
+    private final HikariDataSource dataSource;
 
     private DBConnection() {
-        this.objectMapper = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .enable(SerializationFeature.INDENT_OUTPUT)
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        Properties props = loadProperties();
+
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName(props.getProperty("db.driver"));
+        config.setJdbcUrl(props.getProperty("db.url"));
+        config.setUsername(props.getProperty("db.username"));
+        config.setPassword(props.getProperty("db.password"));
+        config.setMaximumPoolSize(10);
+
+        this.dataSource = new HikariDataSource(config);
+        Runtime.getRuntime().addShutdownHook(new Thread(dataSource::close));
     }
 
     public static DBConnection getInstance() {
         return INSTANCE;
     }
 
-    public synchronized <T> List<T> readAll(Path filePath, TypeReference<List<T>> typeReference) {
-        if (!Files.exists(filePath)) {
-            return new ArrayList<>();
-        }
-
-        try {
-            List<T> data = objectMapper.readValue(filePath.toFile(), typeReference);
-            return data == null ? new ArrayList<>() : new ArrayList<>(data);
-        } catch (IOException e) {
-            throw new UncheckedIOException("파일을 읽는 중 오류가 발생했습니다. path=" + filePath, e);
-        }
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 
-    public synchronized <T> void writeAll(Path filePath, List<T> data) {
-        try {
-            Path parent = filePath.getParent();
-            if (parent != null) {
-                Files.createDirectories(parent);
+    private Properties loadProperties() {
+        Properties props = new Properties();
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream("db.properties")) {
+            if (in == null) {
+                throw new IllegalStateException("db.properties를 classpath에서 찾을 수 없습니다.");
             }
-            objectMapper.writeValue(filePath.toFile(), data);
+            props.load(in);
+            return props;
         } catch (IOException e) {
-            throw new UncheckedIOException("파일을 쓰는 중 오류가 발생했습니다. path=" + filePath, e);
+            throw new DataAccessException("db.properties 로드 실패", e);
         }
     }
 }

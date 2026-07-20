@@ -5,7 +5,7 @@ import com.example.path.model.RouteSearchJsonDto;
 import com.example.path.model.TransportMode;
 import com.example.path.model.TravelPurpose;
 import com.example.path.repository.RouteSearchRepository;
-import com.example.path.util.DBConnection;
+import com.example.path.util.JsonFileConnection;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -19,9 +19,9 @@ public class RouteSearchJsonRepository implements RouteSearchRepository {
 
     private static final Path FILE_PATH = Path.of("data", "route_search.json");
 
-    private final DBConnection dbConnection;
+    private final JsonFileConnection dbConnection;
 
-    public RouteSearchJsonRepository(DBConnection dbConnection) {
+    public RouteSearchJsonRepository(JsonFileConnection dbConnection) {
         this.dbConnection = dbConnection;
     }
 

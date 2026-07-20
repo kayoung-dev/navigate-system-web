@@ -35,3 +35,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### DB ###
+db.properites
+docker-compose.yml

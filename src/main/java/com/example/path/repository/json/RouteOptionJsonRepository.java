@@ -6,7 +6,7 @@ import com.example.path.model.RouteSearch;
 import com.example.path.model.RouteType;
 import com.example.path.repository.RouteOptionRepository;
 import com.example.path.repository.RouteSearchRepository;
-import com.example.path.util.DBConnection;
+import com.example.path.util.JsonFileConnection;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -21,10 +21,10 @@ public class RouteOptionJsonRepository implements RouteOptionRepository {
 
     private static final Path FILE_PATH = Path.of("data", "route_option.json");
 
-    private final DBConnection dbConnection;
+    private final JsonFileConnection dbConnection;
     private final RouteSearchRepository routeSearchRepository;
 
-    public RouteOptionJsonRepository(DBConnection dbConnection, RouteSearchRepository routeSearchRepository) {
+    public RouteOptionJsonRepository(JsonFileConnection dbConnection, RouteSearchRepository routeSearchRepository) {
         this.dbConnection = dbConnection;
         this.routeSearchRepository = routeSearchRepository;
     }
