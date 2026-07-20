@@ -8,10 +8,8 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 public class RouteOptionService {
 
     private final RouteOptionRepository repository;
@@ -25,19 +23,16 @@ public class RouteOptionService {
         this.routeSearchRepository = routeSearchRepository;
     }
 
-    @Transactional
     public RouteOption save(RouteOption routeOption) {
         validateRouteOption(routeOption);
         validateRouteSearchExists(routeOption);
 
-        repository.save(routeOption);
-        return routeOption;
+        return repository.save(routeOption);
     }
 
     /**
      * 지도 API에서 받은 여러 경로를 한 번에 저장합니다.
      */
-    @Transactional
     public List<RouteOption> saveAll(List<RouteOption> routeOptions) {
         if (routeOptions == null || routeOptions.isEmpty()) {
             throw new IllegalArgumentException(
@@ -50,8 +45,7 @@ public class RouteOptionService {
             validateRouteSearchExists(routeOption);
         }
 
-        repository.saveAll(routeOptions);
-        return routeOptions;
+        return repository.saveAll(routeOptions);
     }
 
     public List<RouteOption> findAll() {
@@ -105,7 +99,10 @@ public class RouteOptionService {
         return repository.findByProvider(provider.trim());
     }
 
-    @Transactional
+    /**
+     * RouteSearch 연결, 옵션 순서, 경로 유형은 변경할 수 없습니다(옵션의 정체성).
+     * 거리/소요시간/요금/폴리라인/제공자만 변경 가능합니다.
+     */
     public RouteOption update(RouteOption routeOption) {
         validateRouteOption(routeOption);
 
@@ -115,14 +112,14 @@ public class RouteOptionService {
             );
         }
 
-        findById(routeOption.getId());
+        RouteOption existing = findById(routeOption.getId());
         validateRouteSearchExists(routeOption);
+        validateUnchangedIdentity(existing, routeOption);
 
         repository.update(routeOption);
         return routeOption;
     }
 
-    @Transactional
     public void delete(Long id) {
         findById(id);
         repository.delete(id);
@@ -131,10 +128,19 @@ public class RouteOptionService {
     /**
      * RouteSearch 삭제 전에 연결된 RouteOption을 삭제할 때 사용합니다.
      */
-    @Transactional
     public void deleteByRouteSearchId(Long routeSearchId) {
         validateId(routeSearchId);
         repository.deleteByRouteSearchId(routeSearchId);
+    }
+
+    private void validateUnchangedIdentity(RouteOption existing, RouteOption routeOption) {
+        if (!existing.getRouteSearch().getId().equals(routeOption.getRouteSearch().getId())
+                || !existing.getOptionNumber().equals(routeOption.getOptionNumber())
+                || existing.getRouteType() != routeOption.getRouteType()) {
+            throw new IllegalStateException(
+                    "경로 옵션의 소속 검색/순서/유형은 변경할 수 없습니다. 삭제 후 다시 생성해주세요."
+            );
+        }
     }
 
     private void validateRouteOption(RouteOption routeOption) {

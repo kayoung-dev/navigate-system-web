@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface RouteSearchRepository {
 
-    void save(RouteSearch routeSearch);
+    RouteSearch save(RouteSearch routeSearch);
 
     List<RouteSearch> findAll();
 

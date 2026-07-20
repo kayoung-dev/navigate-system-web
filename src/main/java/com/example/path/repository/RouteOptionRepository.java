@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface RouteOptionRepository {
 
-    void save(RouteOption routeOption);
+    RouteOption save(RouteOption routeOption);
 
-    void saveAll(List<RouteOption> routeOptions);
+    List<RouteOption> saveAll(List<RouteOption> routeOptions);
 
     List<RouteOption> findAll();
 

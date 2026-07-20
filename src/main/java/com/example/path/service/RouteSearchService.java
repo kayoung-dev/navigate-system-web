@@ -9,27 +9,31 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 public class RouteSearchService {
 
     private final RouteSearchRepository repository;
+    private final RouteOptionService routeOptionService;
 
-    public RouteSearchService(RouteSearchRepository repository) {
+    public RouteSearchService(RouteSearchRepository repository, RouteOptionService routeOptionService) {
         this.repository = repository;
+        this.routeOptionService = routeOptionService;
     }
 
     /**
-     * 새로운 길찾기 검색 기록을 저장합니다.
+     * 새로운 길찾기 검색 기록을 저장합니다. searchedAt이 비어 있으면 현재 시각으로 채웁니다.
      */
-    @Transactional
     public RouteSearch save(RouteSearch routeSearch) {
         validateRouteSearch(routeSearch);
 
-        repository.save(routeSearch);
-        return routeSearch;
+        if (routeSearch.getSearchedAt() == null) {
+            routeSearch = routeSearch.toBuilder()
+                    .searchedAt(LocalDateTime.now())
+                    .build();
+        }
+
+        return repository.save(routeSearch);
     }
 
     public List<RouteSearch> findAll() {
@@ -52,8 +56,8 @@ public class RouteSearchService {
 
     /**
      * RouteSearch 객체의 ID가 존재해야 합니다.
+     * 출발지/도착지는 변경할 수 없습니다(새로운 검색으로 등록해야 함) — transportMode/purpose만 변경 가능합니다.
      */
-    @Transactional
     public RouteSearch update(RouteSearch routeSearch) {
         validateRouteSearch(routeSearch);
 
@@ -63,15 +67,20 @@ public class RouteSearchService {
             );
         }
 
-        findById(routeSearch.getId());
+        RouteSearch existing = findById(routeSearch.getId());
+        validateUnchangedLocations(existing, routeSearch);
+
         repository.update(routeSearch);
 
         return routeSearch;
     }
 
-    @Transactional
+    /**
+     * 길찾기 검색 기록을 삭제합니다. 연관된 경로 옵션(RouteOption)도 함께 삭제됩니다.
+     */
     public void delete(Long id) {
         findById(id);
+        routeOptionService.deleteByRouteSearchId(id);
         repository.delete(id);
     }
 
@@ -123,6 +132,15 @@ public class RouteSearchService {
                 startDateTime,
                 endDateTime
         );
+    }
+
+    private void validateUnchangedLocations(RouteSearch existing, RouteSearch routeSearch) {
+        if (!existing.getStartLocation().equals(routeSearch.getStartLocation())
+                || !existing.getDestinationLocation().equals(routeSearch.getDestinationLocation())) {
+            throw new IllegalStateException(
+                    "출발지/도착지는 변경할 수 없습니다. 새로운 검색으로 등록해주세요."
+            );
+        }
     }
 
     private void validateRouteSearch(RouteSearch routeSearch) {

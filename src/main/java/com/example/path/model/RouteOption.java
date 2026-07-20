@@ -13,19 +13,29 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Getter
+@Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString
 @Table(name = "route_option")
 public class RouteOption {
 
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "route_search_id", nullable = false)
     private RouteSearch routeSearch;
@@ -52,12 +62,3 @@ public class RouteOption {
     @Column(length = 30, nullable = false)
     private String provider;
 }
-/*
-public Long getId();
-public RouteSearch getRouteSearch();
-public Integer getOptionNumber();
-public RouteType getRouteType();
-public Integer getDistanceMeters();
-public Integer getDurationSeconds();
-public String getProvider();
-* */

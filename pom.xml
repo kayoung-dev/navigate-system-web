@@ -98,6 +98,23 @@
       <version>7.1.0</version>
       <scope>compile</scope>
     </dependency>
+
+    <!-- ================================================== -->
+    <!-- JSON (route_search.json / route_option.json 저장용) -->
+    <!-- ================================================== -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.17.2</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.17.2</version>
+      <scope>compile</scope>
+    </dependency>
     <!-- ================================================== -->
     <!-- Servlet API                                        -->
     <!-- Tomcat이 실행 시 제공하므로 WAR에 포함하지 않음       -->

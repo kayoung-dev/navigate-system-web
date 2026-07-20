@@ -1,18 +1,31 @@
 package com.example.path;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import com.example.path.repository.RouteOptionRepository;
+import com.example.path.repository.RouteSearchRepository;
+import com.example.path.repository.json.RouteOptionJsonRepository;
+import com.example.path.repository.json.RouteSearchJsonRepository;
+import com.example.path.service.RouteOptionService;
+import com.example.path.service.RouteSearchService;
+import com.example.path.util.DBConnection;
+import com.example.path.view.ConsoleView;
+
 public class Main {
 
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        DBConnection connection = DBConnection.getInstance();
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        // 저장 방식은 인터페이스 타입 변수에 구현체를 대입하는 한 줄만 바꾸면 교체할 수 있다.
+        RouteSearchRepository routeSearchRepository = new RouteSearchJsonRepository(connection); // 파일(JSON) 버전
+        // RouteSearchRepository routeSearchRepository = new RouteSearchJpaRepository(...); // DB(JPA) 버전 — 추후 구현
+
+        RouteOptionRepository routeOptionRepository =
+                new RouteOptionJsonRepository(connection, routeSearchRepository); // 파일(JSON) 버전
+        // RouteOptionRepository routeOptionRepository = new RouteOptionJpaRepository(...); // DB(JPA) 버전 — 추후 구현
+
+        RouteOptionService routeOptionService = new RouteOptionService(routeOptionRepository, routeSearchRepository);
+        RouteSearchService routeSearchService = new RouteSearchService(routeSearchRepository, routeOptionService);
+
+        ConsoleView consoleView = new ConsoleView(routeSearchService, routeOptionService);
+        consoleView.run();
     }
 }
